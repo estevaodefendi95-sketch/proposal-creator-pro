@@ -16,6 +16,7 @@ function ProposalsList() {
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -38,9 +39,12 @@ function ProposalsList() {
 
   const handleCreate = async () => {
     setCreating(true);
+    setError(null);
     try {
       const proposal = await createProposal("[Nome do Cliente]", BLANK_HTML);
       navigate({ to: "/propostas/$id/editar", params: { id: proposal.id } });
+    } catch (err: any) {
+      setError(err?.message || JSON.stringify(err) || "Erro desconhecido ao criar proposta");
     } finally {
       setCreating(false);
     }
@@ -73,6 +77,12 @@ function ProposalsList() {
           </button>
         </div>
       </div>
+
+      {error && (
+        <div style={{ background: "#fdecea", color: "#c0392b", padding: "10px 14px", borderRadius: 6, marginBottom: 16, fontSize: 13 }}>
+          Erro: {error}
+        </div>
+      )}
 
       {loading ? (
         <p>Carregando...</p>
