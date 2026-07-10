@@ -21,6 +21,7 @@ export type Database = {
           created_at: string
           created_by: string | null
           id: string
+          share_token: string
           status: string
           updated_at: string
         }
@@ -30,6 +31,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           id?: string
+          share_token?: string
           status?: string
           updated_at?: string
         }
@@ -39,6 +41,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           id?: string
+          share_token?: string
           status?: string
           updated_at?: string
         }
@@ -49,7 +52,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_proposal_by_token: {
+        Args: { token: string }
+        Returns: {
+          client_name: string
+          content: Json
+          id: string
+          status: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
