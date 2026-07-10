@@ -101,7 +101,13 @@ function applyEditableFlag(root: HTMLElement, editing: boolean) {
   });
 }
 
-export default function ProposalEditor() {
+type ProposalEditorProps = {
+  proposalId?: string;
+  shareToken?: string;
+  mode?: "edit" | "view";
+};
+
+export default function ProposalEditor(_props: ProposalEditorProps = {}) {
   const pageRef = useRef<HTMLDivElement>(null);
   const [editing, setEditing] = useState(false);
   const [savedAt, setSavedAt] = useState<string>("");
