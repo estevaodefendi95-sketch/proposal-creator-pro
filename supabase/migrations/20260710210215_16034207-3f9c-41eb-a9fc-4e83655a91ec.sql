@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS public_read_by_link ON public.proposals;
