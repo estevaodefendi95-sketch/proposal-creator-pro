@@ -1,13 +1,12 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { listProposals, createProposal } from "@/lib/proposals";
+import { listProposals, createProposal, deleteProposal } from "@/lib/proposals";
+import { DEFAULT_HTML } from "@/components/ProposalEditor";
 
 export const Route = createFileRoute("/")({
   component: ProposalsList,
 });
-
-const BLANK_HTML = `<h1 data-editable>Proposta Comercial</h1><p data-editable>Clique em editar para começar a preencher o conteúdo desta proposta.</p>`;
 
 function ProposalsList() {
   const navigate = useNavigate();
@@ -17,6 +16,7 @@ function ProposalsList() {
   const [creating, setCreating] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -41,7 +41,7 @@ function ProposalsList() {
     setCreating(true);
     setError(null);
     try {
-      const proposal = await createProposal("[Nome do Cliente]", BLANK_HTML);
+      const proposal = await createProposal("[Nome do Cliente]", DEFAULT_HTML);
       navigate({ to: "/propostas/$id/editar", params: { id: proposal.id } });
     } catch (err: any) {
       setError(err?.message || JSON.stringify(err) || "Erro desconhecido ao criar proposta");
@@ -60,6 +60,20 @@ function ProposalsList() {
     navigator.clipboard.writeText(url);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const handleDelete = async (id: string, clientName: string) => {
+    const label = clientName && clientName !== "[Nome do Cliente]" ? clientName : "esta proposta";
+    if (!confirm(`Tem certeza que deseja excluir ${label}? Essa ação não pode ser desfeita.`)) return;
+    setDeletingId(id);
+    try {
+      await deleteProposal(id);
+      setProposals((prev) => prev.filter((p) => p.id !== id));
+    } catch (err: any) {
+      setError(err?.message || "Erro ao excluir proposta");
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   if (!session) return null;
@@ -115,6 +129,13 @@ function ProposalsList() {
                 </Link>
                 <button onClick={() => handleCopyLink(p.share_token, p.id)} style={{ ...linkBtnStyle, background: "transparent", color: "#2d5f8f", border: "1px solid #2d5f8f", cursor: "pointer" }}>
                   {copiedId === p.id ? "✓ Copiado!" : "🔗 Copiar link"}
+                </button>
+                <button
+                  onClick={() => handleDelete(p.id, p.client_name)}
+                  disabled={deletingId === p.id}
+                  style={{ ...linkBtnStyle, background: "transparent", color: "#c0392b", border: "1px solid #c0392b", cursor: "pointer" }}
+                >
+                  {deletingId === p.id ? "Excluindo..." : "🗑 Excluir"}
                 </button>
               </div>
             </div>
