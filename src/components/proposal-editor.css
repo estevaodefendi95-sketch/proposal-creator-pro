@@ -399,18 +399,18 @@
   .page table {
     display: block;
     overflow-x: auto;
-    white-space: nowrap;
-    font-size: 12.5px;
     -webkit-overflow-scrolling: touch;
+    font-size: 12.5px;
   }
-  .page thead, .page tbody, .page tr {
+  .page table thead,
+  .page table tbody {
     display: table;
-    width: 100%;
-    table-layout: fixed;
+    width: max-content;
+    min-width: 100%;
   }
   .page th, .page td {
     padding: 8px 10px;
-    white-space: normal;
+    white-space: nowrap;
   }
 
   .page .modulo-list li {
