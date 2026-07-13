@@ -314,3 +314,156 @@
   body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .page [contenteditable="true"] { outline: none; background: transparent; }
 }
+
+@media (max-width: 640px) {
+  .proposal-wrapper {
+    padding: 12px 0 60px;
+  }
+
+  .toolbar {
+    margin: 0 12px 14px;
+    padding: 10px 12px;
+    gap: 6px;
+  }
+  .toolbar input {
+    flex: 1 1 100%;
+    min-width: 0 !important;
+  }
+  .btn, .btn-ghost {
+    font-size: 12px;
+    padding: 7px 12px;
+  }
+  .save-status {
+    flex: 1 1 100%;
+    margin-left: 0;
+    text-align: right;
+  }
+
+  .page {
+    margin: 0 12px;
+    padding: 26px 18px;
+  }
+
+  .page .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    padding-bottom: 16px;
+    margin-bottom: 24px;
+  }
+  .page .logo-img {
+    height: 34px;
+  }
+  .page .header-meta {
+    text-align: left;
+    font-size: 12px;
+  }
+
+  .page h1 {
+    font-size: 22px;
+  }
+  .page .subtitle {
+    font-size: 13.5px;
+    margin-bottom: 22px;
+  }
+  .page h2 {
+    font-size: 16px;
+    margin-top: 28px;
+    margin-bottom: 12px;
+  }
+  .page p {
+    font-size: 13.5px;
+  }
+
+  .page .destaque-box,
+  .page .investimento-box,
+  .page .cta-box {
+    padding: 16px 16px;
+  }
+
+  .page .investimento-box .valor {
+    font-size: 24px;
+  }
+  .page .cta-title {
+    font-size: 16px;
+  }
+  .page .cta-button {
+    font-size: 13.5px;
+    padding: 10px 20px;
+    width: 100%;
+    box-sizing: border-box;
+    justify-content: center;
+  }
+
+  /* Tables scroll horizontally instead of squeezing/breaking columns */
+  .page table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+    font-size: 12.5px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .page thead, .page tbody, .page tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+  }
+  .page th, .page td {
+    padding: 8px 10px;
+    white-space: normal;
+  }
+
+  .page .modulo-list li {
+    padding: 10px 0 10px 24px;
+    font-size: 13.5px;
+  }
+
+  .page .fase {
+    gap: 10px;
+  }
+  .page .fase-num {
+    min-width: 28px;
+    height: 28px;
+    font-size: 12px;
+  }
+  .page .fase-content b {
+    font-size: 13.5px;
+  }
+  .page .fase-content span {
+    font-size: 12px;
+  }
+
+  .page .footer {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .edit-hint {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    text-align: center;
+  }
+
+  .table-row-controls {
+    margin: -6px 0 20px;
+    text-align: left;
+  }
+  .table-add-row-btn {
+    width: 100%;
+    padding: 10px;
+    font-size: 13px;
+  }
+  .page .row-delete-btn {
+    font-size: 15px;
+    padding: 4px 6px;
+    display: inline-block;
+  }
+  .page .fase-delete-btn {
+    align-self: center;
+    font-size: 16px;
+    padding: 4px 8px;
+  }
+}
