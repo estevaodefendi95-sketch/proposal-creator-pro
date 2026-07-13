@@ -251,6 +251,18 @@
   background: var(--cinza-claro);
 }
 
+.page .fase-delete-btn {
+  margin-left: auto;
+  align-self: flex-start;
+  cursor: pointer;
+  color: #c0392b;
+  font-size: 13px;
+  user-select: none;
+}
+.page .fase-delete-btn:hover {
+  opacity: 0.7;
+}
+
 .page .footer {
   margin-top: 50px;
   padding-top: 20px;

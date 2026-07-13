@@ -108,7 +108,125 @@ function applyEditableFlag(root: HTMLElement, editing: boolean) {
   });
 }
 
-function applyTableRowControls(root: HTMLElement, editing: boolean, onChange: () => void) {
+function applyListEditControls(root: HTMLElement, editing: boolean, onChange: () => void) {
+  const lists = Array.from(root.querySelectorAll("ul.modulo-list"));
+
+  lists.forEach((ul) => {
+    ul.querySelectorAll(".row-delete-btn").forEach((el) => el.remove());
+    const next = ul.nextElementSibling as HTMLElement | null;
+    if (next && next.classList.contains("table-row-controls")) next.remove();
+
+    if (!editing) return;
+
+    const addDeleteButton = (li: HTMLLIElement) => {
+      if (li.querySelector(".row-delete-btn")) return;
+      const btn = document.createElement("span");
+      btn.className = "row-delete-btn no-print";
+      btn.textContent = " 🗑";
+      btn.contentEditable = "false";
+      btn.title = "Remover item";
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        li.remove();
+        onChange();
+      });
+      li.appendChild(btn);
+    };
+
+    Array.from(ul.querySelectorAll(":scope > li")).forEach((li) => addDeleteButton(li as HTMLLIElement));
+
+    const wrapper = document.createElement("div");
+    wrapper.className = "table-row-controls no-print";
+    const addBtn = document.createElement("button");
+    addBtn.type = "button";
+    addBtn.className = "table-add-row-btn";
+    addBtn.textContent = "+ Adicionar item";
+    addBtn.addEventListener("click", () => {
+      const items = Array.from(ul.querySelectorAll(":scope > li"));
+      const template = items[items.length - 1] as HTMLLIElement | undefined;
+      if (!template) return;
+      const newLi = template.cloneNode(true) as HTMLLIElement;
+      newLi.querySelectorAll(".row-delete-btn").forEach((el) => el.remove());
+      newLi.innerHTML = "<b>Novo item</b> — descrição aqui";
+      newLi.setAttribute("data-editable", "");
+      newLi.setAttribute("contenteditable", "true");
+      ul.appendChild(newLi);
+      addDeleteButton(newLi);
+      onChange();
+    });
+    wrapper.appendChild(addBtn);
+    ul.insertAdjacentElement("afterend", wrapper);
+  });
+}
+
+function applyFaseEditControls(root: HTMLElement, editing: boolean, onChange: () => void) {
+  const renumber = () => {
+    Array.from(root.querySelectorAll(".fase")).forEach((fase, i) => {
+      const num = fase.querySelector(".fase-num");
+      if (num) num.textContent = String(i + 1);
+    });
+  };
+
+  const fases = Array.from(root.querySelectorAll(".fase"));
+  fases.forEach((fase) => fase.querySelectorAll(".row-delete-btn").forEach((el) => el.remove()));
+  const existingControls = root.querySelector(".fase-controls");
+  if (existingControls) existingControls.remove();
+
+  if (!editing || fases.length === 0) return;
+
+  const addDeleteButton = (fase: Element) => {
+    if (fase.querySelector(".row-delete-btn")) return;
+    const btn = document.createElement("span");
+    btn.className = "row-delete-btn no-print fase-delete-btn";
+    btn.textContent = "🗑";
+    btn.contentEditable = "false";
+    btn.title = "Remover fase";
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      fase.remove();
+      renumber();
+      onChange();
+    });
+    fase.appendChild(btn);
+  };
+
+  fases.forEach((fase) => addDeleteButton(fase));
+
+  const lastFase = fases[fases.length - 1];
+  const wrapper = document.createElement("div");
+  wrapper.className = "table-row-controls fase-controls no-print";
+  const addBtn = document.createElement("button");
+  addBtn.type = "button";
+  addBtn.className = "table-add-row-btn";
+  addBtn.textContent = "+ Adicionar fase";
+  addBtn.addEventListener("click", () => {
+    const currentFases = Array.from(root.querySelectorAll(".fase"));
+    const template = currentFases[currentFases.length - 1];
+    if (!template) return;
+    const newFase = template.cloneNode(true) as HTMLElement;
+    newFase.querySelectorAll(".row-delete-btn").forEach((el) => el.remove());
+    const b = newFase.querySelector(".fase-content b");
+    const span = newFase.querySelector(".fase-content span");
+    if (b) {
+      b.textContent = "Nova fase";
+      b.setAttribute("data-editable", "");
+      b.setAttribute("contenteditable", "true");
+    }
+    if (span) {
+      span.textContent = "Descrição da nova fase";
+      span.setAttribute("data-editable", "");
+      span.setAttribute("contenteditable", "true");
+    }
+    template.insertAdjacentElement("afterend", newFase);
+    addDeleteButton(newFase);
+    renumber();
+    onChange();
+  });
+  wrapper.appendChild(addBtn);
+  lastFase.insertAdjacentElement("afterend", wrapper);
+}
   const tables = Array.from(root.querySelectorAll("table"));
 
   tables.forEach((table) => {
@@ -239,6 +357,8 @@ export default function ProposalEditor({ proposalId, shareToken, mode }: Proposa
       pageRef.current.innerHTML = safeHtml;
       applyEditableFlag(pageRef.current, editing);
       applyTableRowControls(pageRef.current, editing, scheduleSave);
+      applyListEditControls(pageRef.current, editing, scheduleSave);
+      applyFaseEditControls(pageRef.current, editing, scheduleSave);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageHtml]);
@@ -247,6 +367,8 @@ export default function ProposalEditor({ proposalId, shareToken, mode }: Proposa
     if (pageRef.current) {
       applyEditableFlag(pageRef.current, editing);
       applyTableRowControls(pageRef.current, editing, scheduleSave);
+      applyListEditControls(pageRef.current, editing, scheduleSave);
+      applyFaseEditControls(pageRef.current, editing, scheduleSave);
     }
   }, [editing]);
 
