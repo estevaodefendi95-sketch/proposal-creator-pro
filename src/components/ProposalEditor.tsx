@@ -117,6 +117,7 @@ export default function ProposalEditor({ proposalId, shareToken, mode }: Proposa
   const [clientName, setClientName] = useState("");
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [pageHtml, setPageHtml] = useState<string | null>(null);
   const [session, setSession] = useState<any>(undefined);
   const [copied, setCopied] = useState(false);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -145,17 +146,11 @@ export default function ProposalEditor({ proposalId, shareToken, mode }: Proposa
         if (isEdit && proposalId) {
           const p = await getProposal(proposalId);
           setClientName(p.client_name || "");
-          if (pageRef.current) {
-            pageRef.current.innerHTML = p.content?.html || DEFAULT_HTML;
-            applyEditableFlag(pageRef.current, false);
-          }
+          setPageHtml(p.content?.html || DEFAULT_HTML);
         } else if (!isEdit && shareToken) {
           const p = await getProposalByToken(shareToken);
           setClientName(p.client_name || "");
-          if (pageRef.current) {
-            pageRef.current.innerHTML = p.content?.html || DEFAULT_HTML;
-            applyEditableFlag(pageRef.current, false);
-          }
+          setPageHtml(p.content?.html || DEFAULT_HTML);
         }
       } catch {
         setNotFound(true);
@@ -165,6 +160,15 @@ export default function ProposalEditor({ proposalId, shareToken, mode }: Proposa
     };
     load();
   }, [isEdit, proposalId, shareToken]);
+
+  // Write the loaded HTML into the page div once both the data AND the DOM node exist
+  useEffect(() => {
+    if (pageRef.current && pageHtml !== null) {
+      pageRef.current.innerHTML = pageHtml;
+      applyEditableFlag(pageRef.current, editing);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pageHtml]);
 
   useEffect(() => {
     if (pageRef.current) applyEditableFlag(pageRef.current, editing);
@@ -231,9 +235,6 @@ export default function ProposalEditor({ proposalId, shareToken, mode }: Proposa
     }
   };
 
-  if (loading) {
-    return <div style={{ padding: 40, textAlign: "center", color: "#6b7280" }}>Carregando proposta...</div>;
-  }
   if (notFound) {
     return <div style={{ padding: 40, textAlign: "center", color: "#6b7280" }}>Proposta não encontrada.</div>;
   }
@@ -263,6 +264,12 @@ export default function ProposalEditor({ proposalId, shareToken, mode }: Proposa
             {copied ? "✓ Link copiado!" : "🔗 Copiar link do cliente"}
           </button>
           <span className="save-status">{savedAt ? `Salvo às ${savedAt}` : "Autosave ativo"}</span>
+        </div>
+      )}
+
+      {loading && (
+        <div style={{ padding: "10px 0", textAlign: "center", color: "#6b7280", fontSize: 13 }}>
+          Carregando proposta...
         </div>
       )}
 
