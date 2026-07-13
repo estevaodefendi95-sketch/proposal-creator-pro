@@ -108,6 +108,66 @@ function applyEditableFlag(root: HTMLElement, editing: boolean) {
   });
 }
 
+function applyTableRowControls(root: HTMLElement, editing: boolean, onChange: () => void) {
+  const tables = Array.from(root.querySelectorAll("table"));
+
+  tables.forEach((table) => {
+    // Clean slate: remove any previously injected controls before re-adding them
+    table.querySelectorAll(".row-delete-btn").forEach((el) => el.remove());
+    const next = table.nextElementSibling as HTMLElement | null;
+    if (next && next.classList.contains("table-row-controls")) next.remove();
+
+    if (!editing) return;
+
+    const tbody = table.querySelector("tbody") || table;
+
+    const addDeleteButton = (row: HTMLTableRowElement) => {
+      const lastCell = row.querySelector("td:last-child");
+      if (!lastCell || lastCell.querySelector(".row-delete-btn")) return;
+      const btn = document.createElement("span");
+      btn.className = "row-delete-btn no-print";
+      btn.textContent = " 🗑";
+      btn.contentEditable = "false";
+      btn.title = "Remover linha";
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        row.remove();
+        onChange();
+      });
+      lastCell.appendChild(btn);
+    };
+
+    Array.from(tbody.querySelectorAll(":scope > tr")).forEach((row) =>
+      addDeleteButton(row as HTMLTableRowElement)
+    );
+
+    const wrapper = document.createElement("div");
+    wrapper.className = "table-row-controls no-print";
+    const addBtn = document.createElement("button");
+    addBtn.type = "button";
+    addBtn.className = "table-add-row-btn";
+    addBtn.textContent = "+ Adicionar linha";
+    addBtn.addEventListener("click", () => {
+      const rows = Array.from(tbody.querySelectorAll(":scope > tr"));
+      const templateRow = rows[rows.length - 1] as HTMLTableRowElement | undefined;
+      if (!templateRow) return;
+      const newRow = templateRow.cloneNode(true) as HTMLTableRowElement;
+      newRow.querySelectorAll(".row-delete-btn").forEach((el) => el.remove());
+      newRow.querySelectorAll("td").forEach((td) => {
+        td.textContent = "Novo item";
+        td.setAttribute("data-editable", "");
+        td.setAttribute("contenteditable", "true");
+      });
+      tbody.appendChild(newRow);
+      addDeleteButton(newRow);
+      onChange();
+    });
+    wrapper.appendChild(addBtn);
+    table.insertAdjacentElement("afterend", wrapper);
+  });
+}
+
 interface ProposalEditorProps {
   proposalId?: string;
   shareToken?: string;
@@ -178,12 +238,16 @@ export default function ProposalEditor({ proposalId, shareToken, mode }: Proposa
         .replace(/<img[^>]*class="footer-icon"[^>]*>/g, `<img src="${ICON_SRC}" alt="Nortyx" class="footer-icon" />`);
       pageRef.current.innerHTML = safeHtml;
       applyEditableFlag(pageRef.current, editing);
+      applyTableRowControls(pageRef.current, editing, scheduleSave);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageHtml]);
 
   useEffect(() => {
-    if (pageRef.current) applyEditableFlag(pageRef.current, editing);
+    if (pageRef.current) {
+      applyEditableFlag(pageRef.current, editing);
+      applyTableRowControls(pageRef.current, editing, scheduleSave);
+    }
   }, [editing]);
 
   useEffect(() => {
@@ -209,6 +273,7 @@ export default function ProposalEditor({ proposalId, shareToken, mode }: Proposa
     setSaving(true);
     const clone = pageRef.current.cloneNode(true) as HTMLElement;
     clone.querySelectorAll("[contenteditable]").forEach((el) => el.removeAttribute("contenteditable"));
+    clone.querySelectorAll(".row-delete-btn, .table-row-controls").forEach((el) => el.remove());
     try {
       await updateProposalContent(proposalId, clone.innerHTML);
       setSavedAt(new Date().toLocaleTimeString("pt-BR"));

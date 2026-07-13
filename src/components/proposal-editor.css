@@ -224,6 +224,33 @@
   background: #1ebe5b;
 }
 
+.page .row-delete-btn {
+  cursor: pointer;
+  color: #c0392b;
+  margin-left: 8px;
+  font-size: 13px;
+  user-select: none;
+}
+.page .row-delete-btn:hover {
+  opacity: 0.7;
+}
+.table-row-controls {
+  margin: -10px 0 20px;
+  text-align: right;
+}
+.table-add-row-btn {
+  background: transparent;
+  border: 1px dashed var(--dourado);
+  color: var(--azul);
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  cursor: pointer;
+}
+.table-add-row-btn:hover {
+  background: var(--cinza-claro);
+}
+
 .page .footer {
   margin-top: 50px;
   padding-top: 20px;
