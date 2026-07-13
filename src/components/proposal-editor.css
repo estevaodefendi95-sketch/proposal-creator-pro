@@ -188,6 +188,42 @@
   opacity: 0.85;
 }
 
+.page .cta-box {
+  background: #eefaf1;
+  border: 1px solid #bfe8cc;
+  border-radius: 10px;
+  padding: 28px 32px;
+  margin: 32px 0 20px;
+  text-align: center;
+}
+.page .cta-title {
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--azul);
+  margin-bottom: 8px;
+}
+.page .cta-text {
+  color: #3a4655;
+  margin-bottom: 18px;
+}
+.page .cta-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #25d366;
+  color: white;
+  font-weight: 700;
+  font-size: 15px;
+  padding: 12px 28px;
+  border-radius: 30px;
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.35);
+  transition: background 0.15s;
+}
+.page .cta-button:hover {
+  background: #1ebe5b;
+}
+
 .page .footer {
   margin-top: 50px;
   padding-top: 20px;

@@ -89,6 +89,12 @@ export const DEFAULT_HTML = `
   <h2 data-editable>6. Próximos Passos</h2>
   <p data-editable>Após aprovação desta proposta, damos início ao levantamento detalhado do catálogo de produtos e à estruturação do banco de dados, seguindo o cronograma acima.</p>
 
+  <div class="cta-box">
+    <div class="cta-title" data-editable>Pronto para avançar?</div>
+    <p class="cta-text" data-editable>Fale agora com a gente pelo WhatsApp e vamos dar continuidade à sua proposta.</p>
+    <a class="cta-button" href="https://wa.me/5516991746034?text=Ol%C3%A1%2C%20tenho%20interesse%20na%20proposta%20comercial%20e%20gostaria%20de%20avan%C3%A7ar." target="_blank" rel="noopener noreferrer">💬 Falar no WhatsApp</a>
+  </div>
+
   <div class="footer">
     <div class="footer-brand"><img src="${ICON_SRC}" alt="Nortyx" class="footer-icon" /><span>Nortyx Consultoria Financeira</span></div>
     <div data-editable>Proposta válida por 15 dias</div>
