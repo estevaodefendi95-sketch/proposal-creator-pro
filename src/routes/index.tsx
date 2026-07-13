@@ -56,7 +56,7 @@ function ProposalsList() {
   };
 
   const handleCopyLink = (token: string, id: string) => {
-    const url = `${window.location.origin}/p/${token}`;
+    const url = `https://aorviauyrmsfpgovksrm.supabase.co/functions/v1/share-preview?token=${token}`;
     navigator.clipboard.writeText(url);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);

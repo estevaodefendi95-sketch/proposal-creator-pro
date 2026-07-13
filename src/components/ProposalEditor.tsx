@@ -238,7 +238,7 @@ export default function ProposalEditor({ proposalId, shareToken, mode }: Proposa
     if (!proposalId) return;
     try {
       const p = await getProposal(proposalId);
-      const url = `${window.location.origin}/p/${p.share_token}`;
+      const url = `https://aorviauyrmsfpgovksrm.supabase.co/functions/v1/share-preview?token=${p.share_token}`;
       await navigator.clipboard.writeText(url);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
