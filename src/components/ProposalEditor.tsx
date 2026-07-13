@@ -227,6 +227,8 @@ function applyFaseEditControls(root: HTMLElement, editing: boolean, onChange: ()
   wrapper.appendChild(addBtn);
   lastFase.insertAdjacentElement("afterend", wrapper);
 }
+
+function applyTableRowControls(root: HTMLElement, editing: boolean, onChange: () => void) {
   const tables = Array.from(root.querySelectorAll("table"));
 
   tables.forEach((table) => {
