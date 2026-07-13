@@ -228,6 +228,18 @@ function applyFaseEditControls(root: HTMLElement, editing: boolean, onChange: ()
   lastFase.insertAdjacentElement("afterend", wrapper);
 }
 
+function wrapTablesForScroll(root: HTMLElement) {
+  // Wraps each <table> in a scrollable div WITHOUT splitting thead/tbody into
+  // separate display contexts, so header and body columns always stay aligned.
+  Array.from(root.querySelectorAll("table")).forEach((table) => {
+    if (table.parentElement?.classList.contains("table-scroll-wrapper")) return;
+    const wrapper = document.createElement("div");
+    wrapper.className = "table-scroll-wrapper";
+    table.parentElement?.insertBefore(wrapper, table);
+    wrapper.appendChild(table);
+  });
+}
+
 function applyTableRowControls(root: HTMLElement, editing: boolean, onChange: () => void) {
   const tables = Array.from(root.querySelectorAll("table"));
 
@@ -357,6 +369,7 @@ export default function ProposalEditor({ proposalId, shareToken, mode }: Proposa
         .replace(/<img[^>]*class="logo-img"[^>]*>/g, `<img src="${LOGO_SRC}" alt="Nortyx" class="logo-img" />`)
         .replace(/<img[^>]*class="footer-icon"[^>]*>/g, `<img src="${ICON_SRC}" alt="Nortyx" class="footer-icon" />`);
       pageRef.current.innerHTML = safeHtml;
+      wrapTablesForScroll(pageRef.current);
       applyEditableFlag(pageRef.current, editing);
       applyTableRowControls(pageRef.current, editing, scheduleSave);
       applyListEditControls(pageRef.current, editing, scheduleSave);
