@@ -164,12 +164,13 @@ export default function ProposalEditor({ proposalId, shareToken, mode }: Proposa
   // Write the loaded HTML into the page div once both the data AND the DOM node exist
   useEffect(() => {
     if (pageRef.current && pageHtml !== null) {
-      pageRef.current.innerHTML = pageHtml;
-      // Auto-heal legacy/corrupted logo images that may have been saved before a fix
-      const headerImg = pageRef.current.querySelector<HTMLImageElement>(".header img");
-      if (headerImg) headerImg.src = LOGO_SRC;
-      const footerImg = pageRef.current.querySelector<HTMLImageElement>(".footer-brand img");
-      if (footerImg) footerImg.src = ICON_SRC;
+      // Rebuild the logo/icon <img> tags from scratch at the STRING level before
+      // parsing into the DOM. This guarantees a well-formed tag regardless of
+      // whatever (possibly corrupted/truncated) markup was previously saved.
+      const safeHtml = pageHtml
+        .replace(/<img[^>]*class="logo-img"[^>]*>/g, `<img src="${LOGO_SRC}" alt="Nortyx" class="logo-img" />`)
+        .replace(/<img[^>]*class="footer-icon"[^>]*>/g, `<img src="${ICON_SRC}" alt="Nortyx" class="footer-icon" />`);
+      pageRef.current.innerHTML = safeHtml;
       applyEditableFlag(pageRef.current, editing);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
